@@ -10,16 +10,91 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Pathfinder1._0
-{
+{   // Summary:
+    //     Does some really cool stuff
+    //
     public partial class Form1 : Form
     {
+        static int sizeOfArrays = 7;
+        Node[] nodes=new Node[sizeOfArrays];
+        Boolean[] green = new Boolean[sizeOfArrays];
         public Form1()
         {
             InitializeComponent();
+            
         }
-
+        /*
+         * 
+         * The load class
+         */
         private void Form1_Load(object sender, EventArgs e)
         {
+
+        }
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (nodes==null)
+            {
+                return;
+            }
+            Graphics palette = e.Graphics;
+            Color greyish = new Color();
+            greyish = Color.FromArgb(181, 184, 188);
+            SolidBrush brush = new SolidBrush(greyish);
+            Pen blackpen = new Pen(Color.Black);
+            int width = ((int)palette.DpiX / 2) / ((nodes.Length%2)+1);
+            int i = 0;
+            palette.FillRectangle(brush, 0, 0, palette.DpiX, palette.DpiY);
+            brush.Color = Color.Red;
+            while (i < ((nodes.Length / 2)+1))
+            {
+                if (i == 0)
+                {
+                    palette.FillEllipse(brush,width * i, (int)palette.DpiY / 2, width, width);
+                    if (nodes.Length > 1)
+                    {
+                        palette.DrawLine(blackpen, (width * i)+(width/2),(palette.DpiY / 2)+(width/2), (width * (i+1))+(width/2), (((int)palette.DpiY / 2) + width)+(width/2));
+                        palette.DrawLine(blackpen, (width * i) + (width / 2), (palette.DpiY / 2) + (width / 2), (width * (i + 1))+(width/2), (((int)palette.DpiY / 2) - width)+(width/2));
+                    }
+                }
+                else
+                {
+                    if (i!=(nodes.Length / 2))
+                    {
+                        palette.DrawLine(blackpen, (width * i) + (width / 2), ((palette.DpiY / 2) + width) + (width / 2), (width * (i + 1)) + (width / 2), (((int)palette.DpiY / 2) + width) + (width / 2));
+                        palette.DrawLine(blackpen, (width * i) + (width / 2), ((palette.DpiY / 2) + width) + (width / 2), (width * (i + 1)) + (width / 2), (((int)palette.DpiY / 2) - width) + (width / 2));
+                        palette.DrawLine(blackpen, (width * i) + (width / 2), ((palette.DpiY / 2) - width) + (width / 2), (width * (i + 1)) + (width / 2), (((int)palette.DpiY / 2) - width) + (width / 2));
+                        palette.DrawLine(blackpen, (width * i) + (width / 2), ((palette.DpiY / 2) - width) + (width / 2), (width * (i + 1)) + (width / 2), (((int)palette.DpiY / 2) + width) + (width / 2));
+
+                    }
+                    palette.FillEllipse(brush, width * i, ((int)palette.DpiY / 2)+width, width, width);
+                    palette.FillEllipse(brush, width * i, ((int)palette.DpiY / 2)- width, width, width);
+                    if (green[(i * 2) - 1])
+                    {
+                        brush.Color = Color.Green;
+                        palette.FillEllipse(brush, width * i, ((int)palette.DpiY / 2) - width, width, width);
+                        brush.Color = Color.Red;
+                    }
+                    else if(green[(i * 2)])
+                    {
+
+                        brush.Color = Color.Green;
+                        palette.FillEllipse(brush, width * i, ((int)palette.DpiY / 2) + width, width, width);
+                        brush.Color = Color.Red;
+
+                    }
+
+
+                }
+                i++;
+
+            }
+            brush.Dispose();
+            palette.Dispose();
+
 
         }
         private void run_Path(object sender, EventArgs e)
@@ -27,9 +102,8 @@ namespace Pathfinder1._0
             //
             //VARIABLE SETUP
             //
-            int size = 7;
+            int size = nodes.Length;
             Random randomGen = new Random();
-            Node[] nodes = new Node[size];
             String append;
             int[] legs = new int[(size-1) *2];
             int i = 0;
@@ -42,6 +116,11 @@ namespace Pathfinder1._0
             //
             
             i = 0;
+            for (i = 0; i < green.Length; i++)
+            {
+                green[i] = false;
+            };
+            i = 0;
             for (i = 0; i < nodes.Length-2; i++)
             {
                 nodes[i] = new Node();
@@ -52,7 +131,6 @@ namespace Pathfinder1._0
             i = 0;
             while (i < nodes.Length - 2)
             {
-                Debug.Write("Printing\n");
                 if (i==0 || i % 2 == 0)
                 {
                     buffer = 1;
@@ -86,17 +164,48 @@ namespace Pathfinder1._0
                 {
                     legs[i-1] = nodes[(i / 2) - buffer].edges[buffer-1].weight;
                     legs[i - 2] = (i / 2) - buffer;
+                    
                 }
                 else
                 {
                     legs[i-1] = nodes[(i / 2) - (buffer+1)].edges[buffer-1].weight;
                     legs[i - 2] = (i / 2) - (buffer+1);
+                    //
+                    //Edit GREEN
+                    //
+                    if (i - 2 > 0)
+                    {
+                        green[(i / 2) - (buffer + 1)] = true;
+                    }
+
                 }
+                
+                
             }
             legs[3] = nodes[0].edges[1].weight;
             legs[1] = nodes[0].edges[0].weight;
             legs[0] = 0;
             legs[2] = 0;
+            //PRINT GREEN
+            i = 0;
+            Debug.Write("\n");
+            while (i < green.Length)
+            {
+                if (green[i])
+                {
+                    Debug.Write("true ");
+                }
+                else
+                {
+                    Debug.Write("False ");
+                }
+                
+                i++;
+            }
+            Debug.Write("\n");
+            i = 0;
+            //Finish printing Green
+
             //
             //Calculate Best
             //
@@ -163,7 +272,14 @@ namespace Pathfinder1._0
                             Debug.Write("Path " + (pathcounter-1) + " is " + path[pathcounter-1]);
                             append += "node "+path[pathcounter-1]+", then ";
                             pathcounter--;
+                            //
+                            //Edit GREEN
+                            //
+                           
+                           green[path[pathcounter-1]] = true;
+                           this.Refresh();
                         }
+                        this.Refresh();
                         append += "node"+path[0]+"\r\n";
                         append += "For a total of " + size+"\r\n";
                         textBox1_TextChanged(sender, e, append);

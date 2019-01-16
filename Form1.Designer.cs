@@ -37,7 +37,7 @@ namespace Pathfinder1._0
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(310, 163);
+            this.button1.Location = new System.Drawing.Point(400,255);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -47,11 +47,11 @@ namespace Pathfinder1._0
             // 
             // textBox1
             // 
-            this.textOutput.Location = new System.Drawing.Point(310, 183);
+            this.textOutput.Location = new System.Drawing.Point(400,5);
             this.textOutput.Multiline = true;
             this.textOutput.WordWrap = true;
             this.textOutput.Name = "textBox1";
-            this.textOutput.Size = new System.Drawing.Size(363, 127);
+            this.textOutput.Size = new System.Drawing.Size(450,250);
             this.textOutput.TabIndex = 1;
             this.textOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             // 
@@ -68,8 +68,10 @@ namespace Pathfinder1._0
             //System.Drawing.Color col = System.Drawing.ColorTranslator.FromHtml("#a05b16");
             Color col= Color.FromArgb(160, 91, 22);
             this.BackColor = col;
+
             this.ResumeLayout(false);
             this.PerformLayout();
+            this.Paint += this.Form1_Paint;
 
         }
 
